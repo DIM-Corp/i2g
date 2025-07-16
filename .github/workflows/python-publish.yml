@@ -40,11 +40,11 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        flake8 i2g tests
+        flake8 src/i2g tests
 
     - name: Check code style with black
       run: |
-        black --check i2g tests
+        black --check src/i2g tests
 
     - name: Run tests with coverage
       run: |
