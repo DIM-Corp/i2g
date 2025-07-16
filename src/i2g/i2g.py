@@ -84,7 +84,8 @@ class ImageGraphConverter:
         if self.img_array is not None:
             return self.img_array.shape
         else:
-            print("Error: No image loaded yet. Call convert() first.")
+            print("Error: No image loaded yet.")
+            print("Call convert() first.")
             return None
 
     def info(self):
@@ -97,5 +98,6 @@ class ImageGraphConverter:
         if self.graph is not None:
             return self.graph.number_of_nodes(), self.graph.number_of_edges()
         else:
-            print("Error: Graph not created yet. Call convert() first.")
+            print("Error: Graph not created yet.")
+            print(" Call convert() first.")
             return None
