@@ -89,4 +89,5 @@ For major changes, please open an issue first to discuss what you’d like to ch
 
 
 ## ⭐ Contacts 
+info@dimcorp237.com
 mdieffi@gmail.com
