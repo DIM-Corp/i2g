@@ -1,7 +1,9 @@
 import numpy as np
 import networkx as nx
 from PIL import Image
-from src.i2g import ImageGraphConverter
+from i2g import ImageGraphConverter
+import sys
+sys.path.insert(0, "src")
 
 
 def test_image_graph_creation(tmp_path):
