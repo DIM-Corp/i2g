@@ -47,7 +47,11 @@ class ImageGraphConverter:
             for c in range(width):
                 pixel_id = (r, c)
                 intensity = self.img_array[r, c]
-                G.add_node(pixel_id, intensity=intensity, pos=(c, -r))
+                G.add_node(
+                    pixel_id,
+                    intensity=intensity,
+                    pos=(c, -r)
+                )
 
         # Define neighbor offsets
         if self.connectivity == "4":
