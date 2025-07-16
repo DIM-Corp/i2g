@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, "src")
-
 import numpy as np
 import networkx as nx
 from PIL import Image
