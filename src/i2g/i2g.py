@@ -11,7 +11,7 @@ class ImageGraphConverter:
 
         Args:
             image_path (str): Path to the grayscale image.
-            connectivity (str): '4' for 4-connectivity or '8' for 8-connectivity.
+            connectivity (str): '4' or '8' for 8-connectivity.
         """
         self.image_path = image_path
         self.connectivity = connectivity
