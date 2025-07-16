@@ -5,7 +5,7 @@ import numpy as np
 
 
 class ImageGraphConverter:
-    def __init__(self, image_path, connectivity='8'):
+    def __init__(self, image_path, connectivity="8"):
         """
         Initializes the ImageGraphConverter.
 
@@ -28,7 +28,7 @@ class ImageGraphConverter:
             tuple: (networkx.Graph, numpy.ndarray)
         """
         try:
-            img = Image.open(self.image_path).convert('L')
+            img = Image.open(self.image_path).convert("L")
         except FileNotFoundError:
             print(f"Error: Image not found at {self.image_path}")
             return None, None
@@ -50,11 +50,11 @@ class ImageGraphConverter:
                 G.add_node(pixel_id, intensity=intensity, pos=(c, -r))
 
         # Define neighbor offsets
-        if self.connectivity == '4':
+        if self.connectivity == "4":
             neighbors_offsets = [
                 (0, 1), (0, -1), (1, 0), (-1, 0)
             ]
-        elif self.connectivity == '8':
+        elif self.connectivity == "8":
             neighbors_offsets = [
                 (0, 1), (0, -1), (1, 0), (-1, 0),
                 (1, 1), (1, -1), (-1, 1), (-1, -1)
@@ -83,10 +83,9 @@ class ImageGraphConverter:
         """
         if self.img_array is not None:
             return self.img_array.shape
-        else:
-            print("Error: No image loaded yet.")
-            print("Call convert() first.")
-            return None
+        print("Error: No image loaded yet.")
+        print("Call convert() first.")
+        return None
 
     def info(self):
         """
@@ -97,7 +96,6 @@ class ImageGraphConverter:
         """
         if self.graph is not None:
             return self.graph.number_of_nodes(), self.graph.number_of_edges()
-        else:
-            print("Error: Graph not created yet.")
-            print(" Call convert() first.")
-            return None
+        print("Error: Graph not created yet.")
+        print("Call convert() first.")
+        return None
