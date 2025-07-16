@@ -86,3 +86,7 @@ For major changes, please open an issue first to discuss what you’d like to ch
 ## ⭐ Acknowledgements
 
 - Built on top of amazing libraries: [NetworkX](https://networkx.org/), [Pillow](https://python-pillow.org/), [NumPy](https://numpy.org/)
+
+
+## ⭐ Contacts 
+mdieffi@gmail.com
