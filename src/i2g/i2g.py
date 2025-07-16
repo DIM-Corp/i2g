@@ -47,21 +47,26 @@ class ImageGraphConverter:
             for c in range(width):
                 pixel_id = (r, c)
                 intensity = self.img_array[r, c]
-                G.add_node(
-                    pixel_id,
-                    intensity=intensity,
-                    pos=(c, -r)
-                )
+                G.add_node(pixel_id, intensity=intensity, pos=(c, -r))
 
         # Define neighbor offsets
         if self.connectivity == "4":
             neighbors_offsets = [
-                (0, 1), (0, -1), (1, 0), (-1, 0)
+                (0, 1),
+                (0, -1),
+                (1, 0),
+                (-1, 0),
             ]
         elif self.connectivity == "8":
             neighbors_offsets = [
-                (0, 1), (0, -1), (1, 0), (-1, 0),
-                (1, 1), (1, -1), (-1, 1), (-1, -1)
+                (0, 1),
+                (0, -1),
+                (1, 0),
+                (-1, 0),
+                (1, 1),
+                (1, -1),
+                (-1, 1),
+                (-1, -1),
             ]
         else:
             raise ValueError("Connectivity must be '4' or '8'.")
