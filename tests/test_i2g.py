@@ -3,7 +3,7 @@ import numpy as np
 import networkx as nx
 
 
-from i2g import ImageGraphConverter
+from src.i2g import ImageGraphConverter
 
 def test_image_graph_creation(tmp_path):
     # Create a simple 3x3 grayscale image array and save as PNG
