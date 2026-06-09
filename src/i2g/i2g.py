@@ -1,81 +1,78 @@
-# i2g.py
+from pathlib import Path
+
 from PIL import Image
 import networkx as nx
 import numpy as np
 
+_MAX_PIXELS = 10_000_000
+
+# Forward-only offsets avoid adding each undirected edge twice
+_NEIGHBOR_OFFSETS: dict[str, list[tuple[int, int]]] = {
+    "4": [(0, 1), (1, 0)],
+    "8": [(0, 1), (1, 0), (1, 1), (1, -1)],
+}
+
 
 class ImageGraphConverter:
-    def __init__(self, image_path, connectivity="8"):
+    def __init__(self, image_path: str | Path, connectivity: str = "8") -> None:
         """
-        Initializes the ImageGraphConverter.
+        Initialize the ImageGraphConverter.
 
         Args:
-            image_path (str): Path to the grayscale image.
-            connectivity (str): '4' or '8' for 8-connectivity.
+            image_path: Path to the image file.
+            connectivity: '4' for cardinal neighbors, '8' for cardinal + diagonal.
+
+        Raises:
+            ValueError: If connectivity is not '4' or '8'.
         """
-        self.image_path = image_path
+        if connectivity not in _NEIGHBOR_OFFSETS:
+            raise ValueError(f"connectivity must be '4' or '8', got {connectivity!r}")
+        self.image_path = str(image_path)
         self.connectivity = connectivity
-        self.img_array = None
-        self.graph = None
+        self.img_array: np.ndarray | None = None
+        self.graph: nx.Graph | None = None
 
-    def convert(self):
+    def convert(self) -> tuple[nx.Graph, np.ndarray]:
         """
-        Converts the image into a graph structure.
+        Convert the image into a graph structure.
 
-        After running, self.graph and self.img_array will be populated.
+        Each pixel becomes a node with 'intensity' (0-255) and 'pos' (col, -row)
+        attributes. Edges connect adjacent pixels. The graph is undirected and
+        unweighted.
 
         Returns:
             tuple: (networkx.Graph, numpy.ndarray)
+
+        Raises:
+            FileNotFoundError: If the image file does not exist.
+            OSError: If the file cannot be opened as an image.
+            ValueError: If the image exceeds the maximum allowed pixel count.
         """
         try:
             img = Image.open(self.image_path).convert("L")
         except FileNotFoundError:
-            print(f"Error: Image not found at {self.image_path}")
-            return None, None
+            raise
         except Exception as e:
-            print(f"Error loading or processing image: {e}")
-            return None, None
+            raise OSError(f"Could not open image at {self.image_path!r}: {e}") from e
 
         self.img_array = np.array(img)
         height, width = self.img_array.shape
 
+        if height * width > _MAX_PIXELS:
+            raise ValueError(
+                f"Image too large ({width}x{height} = {width * height:,} pixels); "
+                f"maximum is {_MAX_PIXELS:,} pixels."
+            )
+
         G = nx.Graph()
-
-        # Add nodes with intensity and position
-        print(f"Creating nodes for image of size {width}x{height}...")
         for r in range(height):
             for c in range(width):
-                pixel_id = (r, c)
-                intensity = self.img_array[r, c]
-                G.add_node(pixel_id, intensity=intensity, pos=(c, -r))
+                G.add_node((r, c), intensity=int(self.img_array[r, c]), pos=(c, -r))
 
-        # Define neighbor offsets
-        if self.connectivity == "4":
-            neighbors_offsets = [
-                (0, 1),
-                (0, -1),
-                (1, 0),
-                (-1, 0),
-            ]
-        elif self.connectivity == "8":
-            neighbors_offsets = [
-                (0, 1),
-                (0, -1),
-                (1, 0),
-                (-1, 0),
-                (1, 1),
-                (1, -1),
-                (-1, 1),
-                (-1, -1),
-            ]
-        else:
-            raise ValueError("Connectivity must be '4' or '8'.")
-
-        # Add edges
-        print(f"Adding edges with {self.connectivity}-connectivity...")
+        offsets = _NEIGHBOR_OFFSETS[self.connectivity]
         for r in range(height):
             for c in range(width):
-                for dr, dc in neighbors_offsets:
+                for dr, dc in offsets:
                     nr, nc = r + dr, c + dc
                     if 0 <= nr < height and 0 <= nc < width:
                         G.add_edge((r, c), (nr, nc))
@@ -83,28 +80,24 @@ class ImageGraphConverter:
         self.graph = G
         return self.graph, self.img_array
 
-    def shape(self):
+    def shape(self) -> tuple[int, int]:
         """
-        Returns the shape of the image / graph grid as (height, width).
+        Return the image dimensions as (height, width).
 
-        Returns:
-            tuple: (height, width)
+        Raises:
+            RuntimeError: If convert() has not been called yet.
         """
-        if self.img_array is not None:
-            return self.img_array.shape
-        print("Error: No image loaded yet.")
-        print("Call convert() first.")
-        return None
+        if self.img_array is None:
+            raise RuntimeError("No image loaded. Call convert() first.")
+        return self.img_array.shape
 
-    def info(self):
+    def info(self) -> tuple[int, int]:
         """
-        Returns the number of nodes and edges in the graph.
+        Return the number of nodes and edges in the graph.
 
-        Returns:
-            tuple: (num_nodes, num_edges)
+        Raises:
+            RuntimeError: If convert() has not been called yet.
         """
-        if self.graph is not None:
-            return self.graph.number_of_nodes(), self.graph.number_of_edges()
-        print("Error: Graph not created yet.")
-        print("Call convert() first.")
-        return None
+        if self.graph is None:
+            raise RuntimeError("Graph not created. Call convert() first.")
+        return self.graph.number_of_nodes(), self.graph.number_of_edges()
