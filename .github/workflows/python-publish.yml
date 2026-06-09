@@ -23,13 +23,13 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.8, 3.9, 3.11]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -50,7 +50,7 @@ jobs:
       env:
         PYTHONPATH: src
       run: |
-        pytest --cov=i2g --cov-report=xml
+        pytest --cov=i2g --cov-report=xml --cov-fail-under=80
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v4
@@ -64,12 +64,12 @@ jobs:
     needs: build
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: "3.12"
 
     - name: Install build tools
       run: |
@@ -79,6 +79,11 @@ jobs:
     - name: Build package
       run: |
         python -m build
+
+    - name: Smoke-test wheel
+      run: |
+        pip install dist/*.whl
+        python -c "from i2g import ImageGraphConverter; print('OK')"
 
     - name: Publish to PyPI
       env:
