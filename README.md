@@ -1,67 +1,76 @@
+# i2g — Image to Graph Converter
 
-# 🖼️ i2g — Image to Graph Converter
-
-[![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/)
+[![PyPI version](https://img.shields.io/pypi/v/i2g.svg)](https://pypi.org/project/i2g/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![CI](https://github.com/DIM-Corp/i2g/actions/workflows/python-publish.yml/badge.svg)](https://github.com/DIM-Corp/i2g/actions/workflows/python-publish.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![PyPI - Status](https://img.shields.io/badge/status-active-brightgreen.svg)]()
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)]()
 
-Convert grayscale images into graph structures using NetworkX.  
-Each pixel becomes a node, connected to its neighbors (4- or 8-connectivity), with pixel intensity stored as a feature.
+Convert grayscale images into graph structures using NetworkX. Each pixel becomes a node connected to its neighbors (4- or 8-connectivity), with pixel intensity stored as a node attribute.
 
 ---
 
-## 🚀 Features
+## Installation
 
-- ✅ Convert any grayscale image into a `networkx` graph.
-- ✅ Choose 4- or 8-neighborhood connectivity.
-- ✅ Each node stores:
-  - `intensity`: pixel grayscale value (0-255)
-  - `pos`: (x, y) coordinate for plotting.
-- ✅ Easily query the graph’s shape, number of nodes, and edges.
+```bash
+pip install i2g
+```
 
----
-
-## 🛠️ Installation
-
-Clone this repository and install in editable mode:
+Or install from source in editable mode:
 
 ```bash
 git clone https://github.com/DIM-Corp/i2g.git
 cd i2g
-pip install -e .
+pip install -e .[dev]
 ```
 
-Requires: `numpy`, `pillow`, `networkx`.
+Requires Python 3.10+. Dependencies: `numpy`, `Pillow`, `networkx`.
 
 ---
 
-## ✍️ Example usage
+## Usage
 
 ```python
 from i2g import ImageGraphConverter
 
-# Create a converter for your image
-converter = ImageGraphConverter("my_image.png", connectivity='8')
-
-# Convert the image to a graph
+converter = ImageGraphConverter("my_image.png", connectivity="8")
 graph, img_array = converter.convert()
 
-# Query information
-shape = converter.shape()  # returns (height, width)
+shape = converter.shape()          # (height, width)
 num_nodes, num_edges = converter.info()
 
 print(f"Image shape: {shape}")
 print(f"Graph has {num_nodes} nodes and {num_edges} edges.")
 ```
 
+### Node attributes
+
+Each node is keyed by `(row, col)` and carries two attributes:
+
+| Attribute | Type | Description |
+|---|---|---|
+| `intensity` | `int` | Grayscale pixel value (0–255) |
+| `pos` | `tuple[int, int]` | `(col, -row)` — ready for matplotlib/networkx plotting |
+
+### Connectivity
+
+| Value | Neighbors |
+|---|---|
+| `"4"` | Up, down, left, right |
+| `"8"` (default) | Cardinal + diagonal (8 neighbors) |
+
+### Error handling
+
+| Situation | Exception raised |
+|---|---|
+| Invalid `connectivity` value | `ValueError` at construction time |
+| Image file not found | `FileNotFoundError` from `convert()` |
+| File exists but is not a valid image | `OSError` from `convert()` |
+| Image exceeds 10 million pixels | `ValueError` from `convert()` |
+| `shape()` or `info()` called before `convert()` | `RuntimeError` |
+
 ---
 
-## 🚀 Running tests
-
-This project uses [pytest](https://pytest.org).
-
-Run the tests with:
+## Running tests
 
 ```bash
 pytest
@@ -69,25 +78,12 @@ pytest
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License.  
-See the [LICENSE](LICENSE) file for details.
-
----
-
-## 💪 Contributing
-
-Pull requests are welcome!  
-For major changes, please open an issue first to discuss what you’d like to change.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-## ⭐ Acknowledgements
+## Contact
 
-- Built on top of amazing libraries: [NetworkX](https://networkx.org/), [Pillow](https://python-pillow.org/), [NumPy](https://numpy.org/)
-
-
-## ⭐ Contacts 
-info@dimcorp237.com
-mdieffi@gmail.com
+info@dimcorp237.com · mdieffi@gmail.com
